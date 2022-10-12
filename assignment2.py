@@ -13,7 +13,7 @@ from datetime import datetime
 # recording which lines in the file cannot be processed correctly due to an improperly formatted date; and
 # allow a user to enter in an ID number and print out that person’s information.
 
-
+# This is the logger for the assignment
 logger = logging.getLogger(__name__)  
 logger.setLevel(logging.ERROR)
 
@@ -23,7 +23,7 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
-logger.error('Invalid birthday format')
+logger.error('Invalid birthday format or ID number')
 
 
 
@@ -42,12 +42,15 @@ def processData(file_content):
         line = line.decode('utf-8').rstrip('\n')
         person = line.split(',')
         name = person[1]
-        id = person[0]
+        try:
+            id = int(person[0])
+        except ValueError:
+            logger.error(f"Error processing line {line} for ID #")
         birthday = person[2]
         try:
             birthday = datetime.strptime(person[2], '%d/%m/%Y')
         except ValueError:
-            logger.error(f"Error processing line {line} for ID #{person[0]}")
+            logger.error(f"Error processing line #{line} for ID #{person[0]}")
         else:
             personData[id] = (name, birthday)
     return personData
@@ -65,11 +68,11 @@ def main(url):
     csvData = downloadData(url)
     personData = processData(csvData)
     while True:
-        id = input("Enter an ID number: ")
-        if id == "exit":
+        id = int(input("Enter an ID number: "))
+        if id <= 0:
             break
         displayPerson(id, personData)
-        print('Type "exit" to quit')
+        print('Type "0" to quit')
 
 
 if __name__ == "__main__":
