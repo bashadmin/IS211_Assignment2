@@ -43,12 +43,7 @@ def processData(file_content):
         person = line.split(',')
         name = person[1]
         try:
-            id = int(person[0])
-        except ValueError:
-            logger.error(f"Error processing line {line} for ID #")
-        birthday = person[2]
-        try:
-            birthday = datetime.strptime(person[2], '%d/%m/%Y')
+            id, birthday = int(person[0]), datetime.strptime(person[2], '%d/%m/%Y')
         except ValueError:
             logger.error(f"Error processing line #{line} for ID #{person[0]}")
         else:
